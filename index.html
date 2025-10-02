@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Winter Arc Tracker</title>
+    <link rel="icon" type="image/x-icon" href="icon.png">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Username Modal -->
+    <div id="usernameModal" class="username-modal" style="display: none;">
+        <div class="username-modal-content">
+            <h2>🦇 Welcome to Winter Arc: Gotham Edition</h2>
+            <p>Enter your vigilante name to start your personal journey:</p>
+            <input type="text" id="usernameInput" placeholder="Enter your name (e.g., Bruce, Clark, Diana)" maxlength="20">
+            <button id="startJourneyBtn">🎆 Begin Your Arc</button>
+            <p class="username-note">🔒 Your data will be private and separate from other users</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <header>
+            <div class="header-top">
+                <h1>🦇 Winter Arc: Gotham Edition</h1>
+                <div class="user-info">
+                    <span id="currentUser">🦇 Vigilante</span>
+                    <button class="switch-user-btn" id="switchUserBtn" title="Switch User">🔄</button>
+                    <button class="theme-toggle" id="themeToggle">☀️</button>
+                </div>
+            </div>
+            <div class="day-counter" id="dayCounter">Day 1 of 90</div>
+            <div class="date" id="currentDate"></div>
+            <div class="badges" id="badges"></div>
+        </header>
+        
+        <div class="progress-section">
+            <div class="progress-circle">
+                <span id="progressText">0/8</span>
+            </div>
+            <div class="streak">Day <span id="streak">1</span></div>
+        </div>
+
+        <div class="habits-list" role="list" aria-label="Daily habits tracker">
+            <div class="habit" data-habit="wakeup" role="listitem">
+                <span class="habit-icon" aria-hidden="true">🌆</span>
+                <span class="habit-text">Rise before dawn @ 6:00 → Like Bruce Wayne</span>
+                <input type="time" class="time-input" id="wakeupTime" value="06:00" 
+                       aria-label="Wake up time" min="04:00" max="10:00">
+                <div class="checkbox" role="checkbox" aria-checked="false" tabindex="0" 
+                     aria-label="Mark wake up habit as complete"></div>
+            </div>
+            
+            <div class="habit" data-habit="leetcode" role="listitem">
+                <span class="habit-icon" aria-hidden="true">🧾</span>
+                <span class="habit-text">Master algorithms → Mental combat training</span>
+                <div class="checkbox" role="checkbox" aria-checked="false" tabindex="0" 
+                     aria-label="Mark LeetCode habit as complete"></div>
+            </div>
+            
+            <div class="habit" data-habit="dsa" role="listitem">
+                <span class="habit-icon" aria-hidden="true">⚔️</span>
+                <span class="habit-text">DSA deep dive → Sharpen your weapons</span>
+                <div class="checkbox" role="checkbox" aria-checked="false" tabindex="0" 
+                     aria-label="Mark DSA work as complete"></div>
+            </div>
+            
+            <div class="habit" data-habit="dev" role="listitem">
+                <span class="habit-icon" aria-hidden="true">�</span>
+                <span class="habit-text">Build projects → Forge your legacy</span>
+                <div class="checkbox" role="checkbox" aria-checked="false" tabindex="0" 
+                     aria-label="Mark development work as complete"></div>
+            </div>
+            
+            <div class="habit" data-habit="workout" role="listitem">
+                <span class="habit-icon" aria-hidden="true">🥷</span>
+                <span class="habit-text">Physical training → Body of a vigilante</span>
+                <div class="checkbox" role="checkbox" aria-checked="false" tabindex="0" 
+                     aria-label="Mark workout as complete"></div>
+            </div>
+            
+            <div class="habit" data-habit="insta" role="listitem">
+                <span class="habit-icon" aria-hidden="true">�</span>
+                <span class="habit-text">Social media < 1h → Focus like Batman</span>
+                <div class="checkbox" role="checkbox" aria-checked="false" tabindex="0" 
+                     aria-label="Mark Instagram limit as complete"></div>
+            </div>
+            
+            <div class="habit" data-habit="nojunk" role="listitem">
+                <span class="habit-icon" aria-hidden="true">🥗</span>
+                <span class="habit-text">Clean nutrition → Fuel for justice</span>
+                <div class="checkbox" role="checkbox" aria-checked="false" tabindex="0" 
+                     aria-label="Mark no junk food as complete"></div>
+            </div>
+            
+            <div class="habit" data-habit="selfcontrol" role="listitem">
+                <span class="habit-icon" aria-hidden="true">🧠</span>
+                <span class="habit-text">Mental discipline → Mind of steel</span>
+                <div class="checkbox" role="checkbox" aria-checked="false" tabindex="0" 
+                     aria-label="Mark self control as complete"></div>
+            </div>
+        </div>
+
+        <div class="action-buttons" role="group" aria-label="Daily actions">
+            <button class="save-btn" id="saveTodayBtn" aria-describedby="save-help">
+                💾 Commit Progress
+                <span class="sr-only" id="save-help">Save current habit progress</span>
+            </button>
+            <button class="history-btn" id="viewHistoryBtn" aria-describedby="history-help">
+                📈 Mission Log
+                <span class="sr-only" id="history-help">View previous days progress</span>
+            </button>
+        </div>
+        
+        <nav class="nav-buttons" role="navigation" aria-label="Main navigation">
+            <button class="nav-btn" id="todayBtn" aria-pressed="true">Today</button>
+            <button class="nav-btn" id="journalBtn" aria-pressed="false">Journal</button>
+            <button class="nav-btn" id="settingsBtn" aria-pressed="false">Settings</button>
+        </nav>
+        
+        <button class="reset-btn" id="resetDay" aria-describedby="reset-help">
+            Reset Day
+            <span class="sr-only" id="reset-help">Reset all habits for today</span>
+        </button>
+        
+
+        <div class="history-section" id="historySection" style="display: none;">
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalDays">0</div>
+                    <div class="stat-label">Total Days</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="perfectDays">0</div>
+                    <div class="stat-label">Perfect Days</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="avgCompletion">0%</div>
+                    <div class="stat-label">Avg Completion</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="streakCount">🔥 0</div>
+                    <div class="stat-label">Current Streak</div>
+                </div>
+            </div>
+            <div class="mission-log">
+                <h3>🦇 Mission History</h3>
+                <div id="missionHistory">
+                    <p class="no-data">🦇 Your vigilante journey starts fresh today.</p>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <button id="refreshLog" class="action-btn">
+                        <span>🔄</span> Refresh Log
+                    </button>
+                    <button id="clearHistoryBtn" class="action-btn" style="background: linear-gradient(135deg, #dc2626, #991b1b);">
+                        <span>🧩</span> Clear History
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="journal-section" id="journalSection" style="display: none;">
+            <h3>Daily Reflection</h3>
+            <textarea id="dailyNotes" placeholder="How did today go? What did you learn? What can you improve tomorrow?"></textarea>
+            <button class="save-notes-btn" id="saveNotesBtn">Save Notes</button>
+            <div class="notes-history" id="notesHistory"></div>
+        </div>
+        
+        <div class="settings-section" id="settingsSection" style="display: none;">
+            <h3>Customize Your Habits</h3>
+            <div class="habit-editor" id="habitEditor"></div>
+            <button class="add-habit-btn" id="addHabitBtn">+ Add New Habit</button>
+            <button class="save-settings-btn" id="saveSettingsBtn">Save Changes</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

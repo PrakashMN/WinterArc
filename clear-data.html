@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Clear Winter Arc Data</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        .btn {
+            background: #dc2626;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+        }
+        .btn:hover {
+            background: #991b1b;
+        }
+        .success {
+            background: #16a34a;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧹 Winter Arc Data Cleaner</h1>
+    <p>This will clear all Winter Arc history data but keep your start date.</p>
+    
+    <button class="btn" onclick="clearData()">🗑️ Clear All History Data</button>
+    <button class="btn" onclick="showData()" style="background: #0ea5e9;">📊 Show Current Data</button>
+    
+    <div id="result" class="success"></div>
+    <div id="dataDisplay" style="background: #333; padding: 10px; border-radius: 5px; margin: 10px 0; font-family: monospace; font-size: 12px;"></div>
+
+    <script>
+        function clearData() {
+            const keysToRemove = [];
+            
+            // Find all localStorage keys to remove
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key) {
+                    // Remove winterArc_ prefixed keys except start date
+                    if (key.startsWith('winterArc_') && key !== 'winterArcStartDate') {
+                        keysToRemove.push(key);
+                    }
+                    // Remove date pattern keys (YYYY-MM-DD)
+                    if (key.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                        keysToRemove.push(key);
+                    }
+                }
+            }
+            
+            // Remove the keys
+            keysToRemove.forEach(key => {
+                console.log('Removing:', key);
+                localStorage.removeItem(key);
+            });
+            
+            // Also remove some other keys
+            localStorage.removeItem('customHabits');
+            localStorage.removeItem('testDataCleared');
+            localStorage.removeItem('historyCleared');
+            
+            const result = document.getElementById('result');
+            result.style.display = 'block';
+            result.innerHTML = `✅ Cleared ${keysToRemove.length} history entries! Your Winter Arc data is now clean.`;
+            
+            showData();
+        }
+        
+        function showData() {
+            const display = document.getElementById('dataDisplay');
+            const allKeys = [];
+            
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && (key.includes('winter') || key.includes('Winter') || key.includes('arc'))) {
+                    allKeys.push(key + ' = ' + localStorage.getItem(key));
+                }
+            }
+            
+            display.innerHTML = allKeys.length > 0 ? 
+                '<strong>Current Winter Arc Data:</strong><br>' + allKeys.join('<br>') : 
+                '<strong>No Winter Arc data found - all clean! ✅</strong>';
+        }
+        
+        // Show data on load
+        showData();
+    </script>
+</body>
+</html>
