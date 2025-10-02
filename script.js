@@ -195,12 +195,17 @@ class WinterArcTracker {
         }
         
         if (!this.getStorageItem('winterArcStartDate')) {
-            // Use today as default start date for new users
+            // Set October 1, 2025 as the official Winter Arc start date
+            const winterArcStartDate = '2025-10-01';
+            this.setStorageItem('winterArcStartDate', winterArcStartDate);
+            this.startDate = new Date(winterArcStartDate);
+            
+            // Calculate which day of the Winter Arc it is today
             const today = new Date();
-            const defaultDate = today.toISOString().split('T')[0];
-            this.setStorageItem('winterArcStartDate', defaultDate);
-            this.startDate = new Date(defaultDate);
-            this.showNotification(`🦇 Welcome ${this.currentUser}! Your Winter Arc starts today!`, 'success');
+            const startDate = new Date(winterArcStartDate);
+            const dayNumber = Math.floor((today - startDate) / (1000 * 60 * 60 * 24)) + 1;
+            
+            this.showNotification(`🦇 Welcome ${this.currentUser}! You're on Day ${dayNumber} of your Winter Arc!`, 'success');
         } else {
             // Load the valid stored date
             this.startDate = new Date(this.getStorageItem('winterArcStartDate'));
