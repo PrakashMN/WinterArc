@@ -90,20 +90,43 @@ class WinterArcTracker {
         }
     }
     
-    // User-specific storage methods
+    // User-specific storage methods with error handling
     getStorageItem(key) {
         if (!this.currentUser) return null;
-        return localStorage.getItem(`${this.currentUser}_${key}`);
+        try {
+            return localStorage.getItem(`${this.currentUser}_${key}`);
+        } catch (error) {
+            console.error('Error reading from localStorage:', error);
+            this.showNotification('Error loading data. Using defaults.', 'warning');
+            return null;
+        }
     }
     
     setStorageItem(key, value) {
-        if (!this.currentUser) return;
-        localStorage.setItem(`${this.currentUser}_${key}`, value);
+        if (!this.currentUser) return false;
+        try {
+            localStorage.setItem(`${this.currentUser}_${key}`, value);
+            return true;
+        } catch (error) {
+            console.error('Error saving to localStorage:', error);
+            if (error.name === 'QuotaExceededError') {
+                this.showNotification('Storage is full. Please clear some data.', 'error');
+            } else {
+                this.showNotification('Error saving data. Changes may not persist.', 'error');
+            }
+            return false;
+        }
     }
     
     removeStorageItem(key) {
-        if (!this.currentUser) return;
-        localStorage.removeItem(`${this.currentUser}_${key}`);
+        if (!this.currentUser) return false;
+        try {
+            localStorage.removeItem(`${this.currentUser}_${key}`);
+            return true;
+        } catch (error) {
+            console.error('Error removing from localStorage:', error);
+            return false;
+        }
     }
     
     init() {
@@ -172,26 +195,12 @@ class WinterArcTracker {
         }
         
         if (!this.getStorageItem('winterArcStartDate')) {
-            // Default to October 1, 2025 so today (Oct 2) shows as Day 2
-            const defaultDate = '2025-10-01';
-            const userStartDate = prompt(`🦇 ${this.currentUser}, when did you start your Winter Arc? 
-            
-Enter a date (YYYY-MM-DD format) or press OK to use ${defaultDate}:
-(This will make today Day 2 of your Winter Arc)`, defaultDate);
-            
-            if (userStartDate === null || userStartDate.trim() === '') {
-                // User clicked cancel or left empty, use default
-                this.setStorageItem('winterArcStartDate', defaultDate);
-                this.startDate = new Date(defaultDate);
-            } else if (this.isValidDate(userStartDate)) {
-                this.setStorageItem('winterArcStartDate', userStartDate);
-                this.startDate = new Date(userStartDate);
-            } else {
-                // Invalid date, use default and notify user
-                this.setStorageItem('winterArcStartDate', defaultDate);
-                this.startDate = new Date(defaultDate);
-                this.showNotification('Invalid date format. Using October 1, 2025 as start date.', 'warning');
-            }
+            // Use today as default start date for new users
+            const today = new Date();
+            const defaultDate = today.toISOString().split('T')[0];
+            this.setStorageItem('winterArcStartDate', defaultDate);
+            this.startDate = new Date(defaultDate);
+            this.showNotification(`🦇 Welcome ${this.currentUser}! Your Winter Arc starts today!`, 'success');
         } else {
             // Load the valid stored date
             this.startDate = new Date(this.getStorageItem('winterArcStartDate'));
@@ -638,18 +647,8 @@ Enter a date (YYYY-MM-DD format) or press OK to use ${defaultDate}:
         const daysDiff = Math.floor((today - this.startDate) / (1000 * 60 * 60 * 24)) + 1;
         const totalDays = 90;
         
-        // Calculate current day number
-        const adjustedDaysDiff = daysDiff;
-        
-        // Ensure we show a realistic day number
-        let dayNum;
-        if (adjustedDaysDiff <= 0) {
-            dayNum = 1; // Haven't started yet
-        } else if (adjustedDaysDiff > totalDays) {
-            dayNum = totalDays; // Completed the 90 days
-        } else {
-            dayNum = adjustedDaysDiff; // In progress
-        }
+        // Ensure we show a realistic day number (1-90)
+        const dayNum = Math.max(1, Math.min(daysDiff, totalDays));
         
         const dayCounter = this.getCachedElement('dayCounter');
         if (dayCounter) {
@@ -669,17 +668,8 @@ Enter a date (YYYY-MM-DD format) or press OK to use ${defaultDate}:
         const daysDiff = Math.floor((today - this.startDate) / (1000 * 60 * 60 * 24)) + 1;
         const totalDays = 90;
         
-        // Calculate current day number
-        const adjustedDaysDiff = daysDiff;
-        
-        let currentDay;
-        if (adjustedDaysDiff <= 0) {
-            currentDay = 1;
-        } else if (adjustedDaysDiff > totalDays) {
-            currentDay = totalDays;
-        } else {
-            currentDay = adjustedDaysDiff;
-        }
+        // Ensure day number is within valid range
+        const currentDay = Math.max(1, Math.min(daysDiff, totalDays));
         
         // Update the streak display to show current day
         const streakEl = this.getCachedElement('streak');
