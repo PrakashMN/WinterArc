@@ -62,17 +62,6 @@ Winter Arc is a 90-day self-improvement challenge that runs from October 1st to 
 - Clear history functionality
 - Export/backup capabilities
 
-## 🎯 Default Habits
-
-1. **🌆 Rise before dawn @ 6:00** → Like Bruce Wayne
-2. **🧾 Master algorithms** → Mental combat training
-3. **⚔️ DSA deep dive** → Sharpen your weapons
-4. **💻 Build projects** → Forge your legacy
-5. **🥷 Physical training** → Body of a vigilante
-6. **📱 Social media < 1h** → Focus like Batman
-7. **🥗 Clean nutrition** → Fuel for justice
-8. **🧠 Mental discipline** → Mind of steel
-
 ## 🚀 Getting Started
 
 ### Live Version
